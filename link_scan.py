@@ -1,11 +1,12 @@
 import os
 import sys
-from urllib.request import urlopen
-import requests
 from urllib.error import HTTPError
+from urllib.request import urlopen, Request
+
+import requests
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service
 
 
 def get_links(url: str) -> list[str]:
@@ -52,8 +53,12 @@ def is_valid_url(url: str) -> bool:
         Return True if the URL is OK, False otherwise.
         Also return False is the URL has invalid syntax.
     """
+    # insert header to bypass bot checker
+    header = {'User-agent': 'Mozilla/5.0 (Windows; U; Windows NT 5.1;'
+                            ' de; rv:1.9.1.5) Gecko/20091102 Firefox/3.5.5'}
+    request = Request(url, None, header)
     try:
-        with urlopen(url) as conn:
+        with urlopen(request) as conn:
             conn.close()
         return True
     except HTTPError:
